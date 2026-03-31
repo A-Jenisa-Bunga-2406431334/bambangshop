@@ -9,10 +9,14 @@ pub struct Subscriber {
 }
 
 impl Subscriber {
-    pub fn update(&self, product_type: &str, notification: &Notification) {
-        let client = reqwest::blocking::Client::new();
-        let _ = client.post(format!("{}/receive", self.url))
-            .json(notification)
-            .send();
+    pub fn update(&self, _product_type: &str, notification: &Notification) {
+        let url = format!("{}/receive", self.url);
+        let notification = notification.clone();
+        std::thread::spawn(move || {
+            let client = reqwest::blocking::Client::new();
+            let _ = client.post(&url)
+                .json(&notification)
+                .send();
+        });
     }
 }
