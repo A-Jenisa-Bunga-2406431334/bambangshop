@@ -1,21 +1,19 @@
-#### Reflection Publisher-2
+#### Reflection Publisher-3
 
-1. In MVC, Service and Repository are both part of the Model layer but have 
-different responsibilities. Repository handles direct data access (CRUD 
-operations to the database/storage), while Service contains business logic 
-and orchestrates calls to Repository. Separating them makes the code more 
-maintainable - if we change the storage mechanism, we only need to change 
-the Repository without touching the Service logic.
+1. In the Observer pattern, the `notify` method in NotificationService iterates 
+through all subscribers and calls their `update` method. Each Subscriber's 
+`update` method sends an HTTP POST request to the subscriber's URL. This means 
+if there are many subscribers, the notification process will take longer as it 
+sends requests sequentially. For better performance, we could use async/parallel 
+requests.
 
-2. If we only use the Main app without the Receiver app, we would still need 
-to implement the notification mechanism but it would only notify subscribers 
-that are running on the same instance. The Receiver app is needed to simulate 
-real-world scenarios where subscribers are separate services. Without it, 
-we cannot properly test the Observer pattern's notification mechanism across 
-different services.
+2. If we had 1 publisher and many subscribers, running the receiver app multiple 
+times on different ports would simulate multiple subscribers. Each receiver 
+instance would register itself with a different URL, and the publisher would 
+send notifications to all of them when a product event occurs.
 
-3. While implementing the tutorial, I noticed that using Postman made testing 
-the REST endpoints much easier. Each endpoint (subscribe, unsubscribe) could 
-be tested independently without needing a frontend. The DashMap data structure 
-was particularly useful for thread-safe concurrent access to subscriber data, 
-which is important in a web application context.
+3. Using async programming would make the notification process more efficient. 
+Instead of waiting for each HTTP request to complete before sending the next one, 
+we could send all notifications concurrently. However, the current blocking 
+approach is simpler to implement and debug. The trade-off is between simplicity 
+and performance.
