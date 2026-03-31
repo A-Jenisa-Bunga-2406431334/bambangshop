@@ -17,6 +17,7 @@ impl ProductService {
             product_title: product_result.title.clone(),
             product_url: product_result.get_url(),
             subscriber_name: String::from(""),
+            status: String::from("CREATED"),
         };
         NotificationService::notify(&product_result.product_type, notification);
         return Ok(product_result);
@@ -51,6 +52,7 @@ impl ProductService {
             product_title: product.title.clone(),
             product_url: product.get_url(),
             subscriber_name: String::from(""),
+            status: String::from("DELETED"),
         };
         NotificationService::notify(&product.product_type, notification);
         return Ok(Json::from(product));

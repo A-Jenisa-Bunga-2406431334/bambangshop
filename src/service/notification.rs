@@ -37,6 +37,7 @@ impl NotificationService {
             product_title: product.title.clone(),
             product_url: product.get_url(),
             subscriber_name,
+            status: String::from("PROMOTED"),
         };
         NotificationService::notify(&product.product_type, notification.clone());
         return Ok(notification);
