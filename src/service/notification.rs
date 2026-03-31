@@ -12,6 +12,13 @@ impl NotificationService {
     }
 
     pub fn unsubscribe(product_type: &str, url: &str) -> Result<Subscriber> {
-        todo!()
+        let subscriber_opt = SubscriberRepository::delete(product_type, url);
+        if subscriber_opt.is_none() {
+            return Err(compose_error_response(
+                Status::NotFound,
+                String::from("Subscriber not found.")
+            ));
+        }
+        return Ok(subscriber_opt.unwrap());
     }
 }
