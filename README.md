@@ -1,19 +1,22 @@
-#### Reflection Publisher-3
+#### Reflection Publisher-2
 
-1. In the Observer pattern, the `notify` method in NotificationService iterates 
-through all subscribers and calls their `update` method. Each Subscriber's 
-`update` method sends an HTTP POST request to the subscriber's URL. This means 
-if there are many subscribers, the notification process will take longer as it 
-sends requests sequentially. For better performance, we could use async/parallel 
-requests.
+1. In MVC, Model covers both data storage and business logic. We need to 
+separate Service and Repository from Model because of Single Responsibility 
+Principle. Repository should only handle data access operations (CRUD), while 
+Service should only handle business logic. If we put everything in Model, the 
+class becomes too complex and hard to maintain. Changes in data storage would 
+affect business logic and vice versa.
 
-2. If we had 1 publisher and many subscribers, running the receiver app multiple 
-times on different ports would simulate multiple subscribers. Each receiver 
-instance would register itself with a different URL, and the publisher would 
-send notifications to all of them when a product event occurs.
+2. If we only use the Model without Service and Repository separation, the 
+interactions between Program, Subscriber, and Notification would become very 
+complex. Program model would need to directly manage Subscriber data and 
+Notification logic. This means any change in one model could break other models. 
+The code complexity would increase significantly because each model would need 
+to know too much about other models, violating the separation of concerns principle.
 
-3. Using async programming would make the notification process more efficient. 
-Instead of waiting for each HTTP request to complete before sending the next one, 
-we could send all notifications concurrently. However, the current blocking 
-approach is simpler to implement and debug. The trade-off is between simplicity 
-and performance.
+3. Postman has been very helpful in testing the REST API endpoints. I used it 
+to test subscribe, unsubscribe, create product, and delete product endpoints. 
+Features that I find useful include: the ability to save requests in collections 
+for reuse, setting request body in JSON format easily, and viewing response 
+status codes and body clearly. For group projects, Postman collections can be 
+shared among team members to ensure everyone tests the API consistently.
