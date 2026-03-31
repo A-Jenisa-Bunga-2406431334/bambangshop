@@ -1,5 +1,6 @@
 use rocket::http::Status;
 use bambangshop::{Result, compose_error_response};
+use crate::model::notification::Notification;
 use crate::model::subscriber::Subscriber;
 use crate::repository::subscriber::SubscriberRepository;
 
@@ -20,5 +21,12 @@ impl NotificationService {
             ));
         }
         return Ok(subscriber_opt.unwrap());
+    }
+
+    pub fn notify(product_type: &str, notification: Notification) {
+        let subscribers = SubscriberRepository::list_all(product_type);
+        for subscriber in subscribers {
+            subscriber.update(product_type, &notification);
+        }
     }
 }
