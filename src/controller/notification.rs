@@ -13,5 +13,8 @@ pub fn subscribe(product_type: &str, subscriber: Json<Subscriber>) -> Result<Jso
 
 #[post("/unsubscribe/<product_type>/<subscriber_url>")]
 pub fn unsubscribe(product_type: &str, subscriber_url: &str) -> Result<Json<Subscriber>> {
-    todo!()
+    return match NotificationService::unsubscribe(product_type, subscriber_url) {
+        Ok(f) => Ok(Json::from(f)),
+        Err(e) => Err(e)
+    };
 }
