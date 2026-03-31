@@ -7,7 +7,8 @@ pub struct NotificationService;
 
 impl NotificationService {
     pub fn subscribe(product_type: &str, subscriber: Subscriber) -> Result<Subscriber> {
-        todo!()
+        let subscriber_result = SubscriberRepository::add(product_type, subscriber);
+        return Ok(subscriber_result);
     }
 
     pub fn unsubscribe(product_type: &str, url: &str) -> Result<Subscriber> {
