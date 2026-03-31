@@ -1,7 +1,9 @@
 use rocket::serde::json::Json;
 use bambangshop::Result;
 use crate::model::subscriber::Subscriber;
+use crate::model::notification::Notification;
 use crate::service::notification::NotificationService;
+use crate::service::product::ProductService;
 
 #[post("/subscribe/<product_type>", data = "<subscriber>")]
 pub fn subscribe(product_type: &str, subscriber: Json<Subscriber>) -> Result<Json<Subscriber>> {
@@ -14,6 +16,15 @@ pub fn subscribe(product_type: &str, subscriber: Json<Subscriber>) -> Result<Jso
 #[post("/unsubscribe/<product_type>/<subscriber_url>")]
 pub fn unsubscribe(product_type: &str, subscriber_url: &str) -> Result<Json<Subscriber>> {
     return match NotificationService::unsubscribe(product_type, subscriber_url) {
+        Ok(f) => Ok(Json::from(f)),
+        Err(e) => Err(e)
+    };
+}
+
+#[post("/publish/<product_id>/<subscriber_name>")]
+pub fn publish(product_id: usize, subscriber_name: &str) -> Result<Json<Notification>> {
+    let product = ProductService::read(product_id)?;
+    return match NotificationService::publish(&product, subscriber_name.to_string()) {
         Ok(f) => Ok(Json::from(f)),
         Err(e) => Err(e)
     };

@@ -1,6 +1,7 @@
 use rocket::http::Status;
 use bambangshop::{Result, compose_error_response};
 use crate::model::notification::Notification;
+use crate::model::product::Product;
 use crate::model::subscriber::Subscriber;
 use crate::repository::subscriber::SubscriberRepository;
 
@@ -28,5 +29,16 @@ impl NotificationService {
         for subscriber in subscribers {
             subscriber.update(product_type, &notification);
         }
+    }
+
+    pub fn publish(product: &Product, subscriber_name: String) -> Result<Notification> {
+        let notification = Notification {
+            product_type: product.product_type.clone(),
+            product_title: product.title.clone(),
+            product_url: product.get_url(),
+            subscriber_name,
+        };
+        NotificationService::notify(&product.product_type, notification.clone());
+        return Ok(notification);
     }
 }
