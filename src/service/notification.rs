@@ -1,3 +1,4 @@
+use std::thread;
 use bambangshop::{Result, compose_error_response};
 use rocket::http::Status;
 use crate::model::notification::Notification;
@@ -28,10 +29,20 @@ impl NotificationService {
         return Ok(result.unwrap());
     }
 
-    pub fn notify(product_type: &str, notification: Notification) {
-        let subscribers = SubscriberRepository::list_all(product_type);
+    pub fn notify(product_type: &str, status: &str, product: Product) {
+        let mut payload: Notification = Notification {
+            product_title: product.title.clone(),
+            product_type: String::from(product_type),
+            product_url: product.get_url(),
+            subscriber_name: String::from(""),
+            status: String::from(status),
+        };
+        let subscribers: Vec<Subscriber> = SubscriberRepository::list_all(product_type);
         for subscriber in subscribers {
-            subscriber.update(product_type, &notification);
+            payload.subscriber_name = subscriber.clone().name;
+            let subscriber_clone: Subscriber = subscriber.clone();
+            let payload_clone = payload.clone();
+            thread::spawn(move || subscriber_clone.update(payload_clone));
         }
     }
 
@@ -43,7 +54,7 @@ impl NotificationService {
             subscriber_name,
             status: String::from("PROMOTED"),
         };
-        NotificationService::notify(&product.product_type, notification.clone());
+        NotificationService::notify(&product.product_type, "PROMOTED", product.clone());
         return Ok(notification);
     }
 }

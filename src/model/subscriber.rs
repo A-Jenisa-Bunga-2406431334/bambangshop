@@ -1,7 +1,5 @@
 use rocket::serde::{Deserialize, Serialize};
 use rocket::serde::json::to_string;
-use rocket::tokio;
-use bambangshop::REQWEST_CLIENT;
 use crate::model::notification::Notification;
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
@@ -12,18 +10,18 @@ pub struct Subscriber {
 }
 
 impl Subscriber {
-    pub fn update(&self, _product_type: &str, notification: &Notification) {
-        let url = format!("{}/receive", self.url);
-        let notification = notification.clone();
-        let payload = to_string(&notification).unwrap();
-        rocket::info!("Sending notification to {} with payload: {}", url, payload);
-        let request = REQWEST_CLIENT.post(&url).json(&notification);
-        tokio::spawn(async move {
-            let response = request.send().await;
-            match response {
-                Ok(res) => rocket::info!("Notification sent to {} with status: {}", url, res.status()),
-                Err(e) => rocket::error!("Failed to send notification to {}: {}", url, e),
-            }
+    pub fn update(&self, payload: Notification) {
+        let url = self.url.clone();
+        let payload_clone = payload.clone();
+        std::thread::spawn(move || {
+            let client = reqwest::blocking::Client::new();
+            let _ = client.post(&url)
+                .header("Content-Type", "application/json")
+                .body(to_string(&payload_clone).unwrap())
+                .send();
+            rocket::warn!("Sent {} notification of: [{}] {}, to: {}",
+                payload_clone.status, payload_clone.product_type,
+                payload_clone.product_title, url);
         });
     }
 }
