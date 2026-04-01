@@ -1,22 +1,22 @@
-#### Reflection Publisher-2
+#### Reflection Publisher-3
 
-1. In MVC, Model covers both data storage and business logic. We need to 
-separate Service and Repository from Model because of Single Responsibility 
-Principle. Repository should only handle data access operations (CRUD), while 
-Service should only handle business logic. If we put everything in Model, the 
-class becomes too complex and hard to maintain. Changes in data storage would 
-affect business logic and vice versa.
+1. In this tutorial, we use the Push model variation of Observer Pattern. 
+The publisher (BambangShop) actively pushes notification data to each 
+subscriber when an event occurs (product created, deleted, or promoted). 
+The subscribers do not need to request data - they just receive it.
 
-2. If we only use the Model without Service and Repository separation, the 
-interactions between Program, Subscriber, and Notification would become very 
-complex. Program model would need to directly manage Subscriber data and 
-Notification logic. This means any change in one model could break other models. 
-The code complexity would increase significantly because each model would need 
-to know too much about other models, violating the separation of concerns principle.
+2. If we used the Pull model instead, the advantages would be that subscribers 
+can request data only when they need it, reducing unnecessary data transfer. 
+However, the disadvantages are: subscribers need to periodically poll the 
+publisher for updates (inefficient), there would be delays in receiving 
+notifications, and the publisher needs to provide additional endpoints for 
+subscribers to pull data from. For our use case, Push model is better because 
+we want real-time notifications.
 
-3. Postman has been very helpful in testing the REST API endpoints. I used it 
-to test subscribe, unsubscribe, create product, and delete product endpoints. 
-Features that I find useful include: the ability to save requests in collections 
-for reuse, setting request body in JSON format easily, and viewing response 
-status codes and body clearly. For group projects, Postman collections can be 
-shared among team members to ensure everyone tests the API consistently.
+3. If we decide to not use multi-threading in the notification process, the 
+program would send HTTP requests to each subscriber sequentially. This means 
+the program would have to wait for each HTTP request to complete before 
+sending the next one. If there are many subscribers or if the network is slow, 
+this could cause significant delays and block the main thread from handling 
+other requests. With multi-threading, all notifications are sent concurrently, 
+making the process much faster and non-blocking.
